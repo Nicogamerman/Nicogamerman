@@ -5,7 +5,7 @@
 
 <p align="left"> <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=nicogamerman" alt="nicogamerman" /></a> </p>
 
-- 🌱 I’m currently learning **Python / Django**
+- 🌱 I’m currently learning **Python / Django and working in Claro Argentina**
 
 - 📫 How to reach me **gamermanico@gmail.com**
 
