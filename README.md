@@ -82,12 +82,10 @@ Actualmente estoy finalizando mi carrera de **Analista de Sistemas**, donde cons
 ## Estadísticas de GitHub
 
 <p align="center">
-  <a href="https://github-profile-trophy.vercel.app/?username=nicogamerman&theme=flat&margin-w=10&margin-h=10">
-    <img src="https://github-profile-trophy.vercel.app/?username=nicogamerman&theme=flat&margin-w=10&margin-h=10" alt="nicogamerman trophies"/>
-  </a>
+  <img src="https://github-trophies.vercel.app/?username=nicogamerman&theme=flat&margin-w=10&margin-h=10&no-bg=true" alt="nicogamerman trophies"/>
 </p>
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=nicogamerman&show_icons=true&locale=en&theme=default&hide_border=true" alt="nicogamerman stats" height="165"/>
-  <img src="https://github-readme-stats.vercel.app/api/top-langs?username=nicogamerman&show_icons=true&locale=en&layout=compact&hide_border=true" alt="nicogamerman top langs" height="165"/>
+  <img src="https://github-readme-stats-fast.vercel.app/api/?username=nicogamerman&show_icons=true&locale=en&theme=default&hide_border=true" alt="nicogamerman stats" height="165"/>
+  <img src="https://github-readme-stats-fast.vercel.app/api/top-langs/?username=nicogamerman&show_icons=true&locale=en&layout=compact&hide_border=true" alt="nicogamerman top langs" height="165"/>
 </p>
