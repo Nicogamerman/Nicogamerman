@@ -5,7 +5,7 @@
 
 <p align="center">
   <a href="https://github.com/DenverCoder1/readme-typing-svg">
-    <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=22&pause=1000&color=0E75B6&center=true&vCenter=true&width=500&lines=Full+Stack+%26+Backend+Developer;Python+%2F+Django+%7C+PHP+%2F+Laravel;Cybersecurity+%26+Red+Team+Enthusiast;Always+learning+new+things+%F0%9F%9A%80" alt="Typing SVG" />
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=22&pause=1000&color=0E75B6&center=true&vCenter=true&width=500&lines=Full+Stack+%26+Backend+Developer;Python+%2F+Django+%7C+PHP+%2F+Laravel;Cybersecurity+%26+Red+Team+Enthusiast;Always+learning+new+things+%F0%9F%9A%80" alt="Typing SVG" />
   </a>
 </p>
 
@@ -38,7 +38,7 @@ Actualmente estoy finalizando mi carrera de **Analista de Sistemas**, donde cons
 ### Backend & Scripting
 <p>
   <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
-  <img src="https://cdn.worldvectorlogo.com/logos/django.svg" alt="django" width="40" height="40"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/django/django-plain.svg" alt="django" width="40" height="40"/>
   <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/php/php-original.svg" alt="php" width="40" height="40"/>
   <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/laravel/laravel-plain-wordmark.svg" alt="laravel" width="40" height="40"/>
 </p>
@@ -90,8 +90,4 @@ Actualmente estoy finalizando mi carrera de **Analista de Sistemas**, donde cons
 <p align="center">
   <img src="https://github-readme-stats.vercel.app/api?username=nicogamerman&show_icons=true&locale=en&theme=default&hide_border=true" alt="nicogamerman stats" height="165"/>
   <img src="https://github-readme-stats.vercel.app/api/top-langs?username=nicogamerman&show_icons=true&locale=en&layout=compact&hide_border=true" alt="nicogamerman top langs" height="165"/>
-</p>
-
-<p align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=nicogamerman&hide_border=true" alt="nicogamerman streak"/>
 </p>
