@@ -109,17 +109,230 @@ function refreshWorldHUD() {
   renderMap();
 }
 
-// ─── MOTOR DE MAPA TOP-DOWN ──────────────────
+// ─── MOTOR DE MAPA TOP-DOWN (canvas) ─────────
 let worldState = null;
+const ENCOUNTER_RATE = 0.16;
 
-const TILE_EMOJI = {
-  garden: { '#': '🌳', ',': '🌿', 'H': '🌼', 'I': '🎁' },
-  forest: { '#': '🌲', ',': '🌿', 'H': '🌼', 'I': '🎁' },
-  cave:   { '#': '🪨', ',': '🍄', 'H': '🌼', 'I': '🎁' },
-  swamp:  { '#': '🌴', ',': '🌾', 'H': '🌼', 'I': '🎁', '~': '〰️' },
+// Tamaño lógico del canvas (Game Boy: 160×144 → usamos 9×9 tiles de 32px)
+const TS = 32;   // tile size en píxeles
+const VW = 9;    // tiles visibles ancho
+const VH = 9;    // tiles visibles alto
+
+// Paletas pixel-art por bioma
+const PAL = {
+  garden: { g1:'#98d058', g2:'#88c048', grs:'#3a6818', grl:'#5a9828',
+            w1:'#1e4a0e', w2:'#132e08', tr:'#7a5030', ca:'#2a5010', cl:'#4a8020',
+            wa:'#2898f8', wl:'#78c8ff', boss:'#c02020', door:'#181818' },
+  forest: { g1:'#70a838', g2:'#609028', grs:'#244010', grl:'#406828',
+            w1:'#122808', w2:'#091404', tr:'#604828', ca:'#1e3808', cl:'#365818',
+            wa:'#1868e0', wl:'#68b0f8', boss:'#c02020', door:'#101010' },
+  cave:   { g1:'#b0a890', g2:'#a09880', grs:'#504030', grl:'#706050',
+            w1:'#302820', w2:'#181410', tr:'#483828', ca:'#281e14', cl:'#483828',
+            wa:'#2848a0', wl:'#6088d8', boss:'#c02020', door:'#181818' },
+  swamp:  { g1:'#789050', g2:'#687840', grs:'#243018', grl:'#405830',
+            w1:'#182810', w2:'#0c1408', tr:'#384a28', ca:'#1c2e10', cl:'#304820',
+            wa:'#1a6070', wl:'#3a98a8', boss:'#c02020', door:'#101818' },
 };
 
-const ENCOUNTER_RATE = 0.16;
+// Colores del sprite del jugador por personaje
+const CHAR_COL = {
+  ant:       ['#d02020','#800808'],
+  beetle:    ['#3848a0','#1c2460'],
+  mantis:    ['#289040','#144820'],
+  dragonfly: ['#1878d8','#0c3c80'],
+  spider:    ['#181818','#000000'],
+};
+
+let _raf = null;
+let _tick = 0;
+
+function _startMapLoop() {
+  if (_raf) return;
+  function loop() {
+    _tick++;
+    if (worldState && window.player &&
+        document.getElementById('screen-world').classList.contains('active')) {
+      _drawCanvas();
+    }
+    _raf = requestAnimationFrame(loop);
+  }
+  _raf = requestAnimationFrame(loop);
+}
+
+function _stopMapLoop() {
+  if (_raf) cancelAnimationFrame(_raf);
+  _raf = null;
+}
+
+// ── Dibujado de tiles ─────────────────────────
+function _tile(ctx, t, dx, dy, pal, isPlayer) {
+  const S = TS, cx = dx + S/2|0, cy = dy + S/2|0;
+  const blink = (_tick >> 3) & 1;    // alterna cada 8 frames
+  const blink2 = (_tick >> 4) & 1;
+
+  // Suelo base con tablero sutil
+  ctx.fillStyle = (((dx/S|0) + (dy/S|0)) & 1) ? pal.g1 : pal.g2;
+  ctx.fillRect(dx, dy, S, S);
+
+  switch (t) {
+    case '#': // Árbol/muro
+      ctx.fillStyle = pal.w1;
+      ctx.fillRect(dx, dy, S, S);
+      ctx.fillStyle = pal.ca;
+      ctx.fillRect(dx+2, dy+2, S-4, S-10);
+      ctx.fillStyle = pal.cl;
+      ctx.fillRect(dx+5, dy+4, 8, 7);
+      ctx.fillStyle = pal.tr;
+      ctx.fillRect(cx-3, dy+S-10, 6, 10);
+      ctx.fillStyle = pal.w2;
+      ctx.fillRect(dx, dy, S, 2); ctx.fillRect(dx, dy, 2, S);
+      break;
+
+    case ',': // Hierba alta
+      ctx.fillStyle = pal.grs;
+      ctx.fillRect(dx, dy, S, S);
+      ctx.fillStyle = pal.grl;
+      for (let i = 3; i < S-2; i += 5) {
+        const h = (S>>1) + ((_tick + i*3) >> 5 & 1);
+        ctx.fillRect(dx+i, dy+S-h-2, 2, h);
+      }
+      break;
+
+    case '~': // Agua
+      ctx.fillStyle = pal.wa;
+      ctx.fillRect(dx, dy, S, S);
+      ctx.fillStyle = pal.wl;
+      for (let r = 0; r < 4; r++) {
+        const ry = dy + ((_tick*2 + r*8) & (S-1));
+        ctx.fillRect(dx+2, ry, S-4, 2);
+      }
+      break;
+
+    case 'I': // Cofre de ítem
+      ctx.fillStyle = '#805000';
+      ctx.fillRect(cx-8, cy-2, 16, 11);
+      ctx.fillStyle = '#f0b000';
+      ctx.fillRect(cx-7, cy-6, 14, 9);
+      ctx.fillStyle = '#ffd840';
+      ctx.fillRect(cx-5, cy-5, 6, 5);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(cx-2, cy, 4, 4);
+      if (blink) { // destello
+        ctx.fillStyle = '#fff8';
+        ctx.fillRect(cx-10, cy-10, 3, 3);
+        ctx.fillRect(cx+7,  cy-8,  3, 3);
+      }
+      break;
+
+    case 'H': // Flor curativa
+      ctx.fillStyle = '#208020'; ctx.fillRect(cx-1, cy, 2, 12);
+      ctx.fillStyle = '#f870c0';
+      ctx.fillRect(cx-8, cy-4, 6, 6); ctx.fillRect(cx+2, cy-4, 6, 6);
+      ctx.fillRect(cx-3, cy-10, 6, 6); ctx.fillRect(cx-3, cy+2, 6, 6);
+      ctx.fillStyle = '#f8e000'; ctx.fillRect(cx-4, cy-4, 8, 8);
+      ctx.fillStyle = '#f8a000'; ctx.fillRect(cx-2, cy-2, 4, 4);
+      break;
+
+    case 'B': // Jefe
+      ctx.fillStyle = blink ? '#b81818' : '#601010';
+      ctx.fillRect(cx-9, cy-9, 18, 18);
+      ctx.fillStyle = blink2 ? '#f8f000' : '#c0a000';
+      ctx.fillRect(cx-6, cy-3, 4, 4); ctx.fillRect(cx+2, cy-3, 4, 4);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(cx-5, cy+3, 3, 3); ctx.fillRect(cx-1, cy+3, 3, 3); ctx.fillRect(cx+3, cy+3, 3, 3);
+      // aura
+      ctx.fillStyle = `rgba(200,0,0,${blink ? .25 : .08})`;
+      ctx.fillRect(cx-12, cy-12, 24, 24);
+      break;
+
+    case '>': case '<': // Puerta
+      ctx.fillStyle = pal.door;
+      ctx.fillRect(dx, dy, S, S);
+      ctx.fillStyle = '#f8f890';
+      // Flecha manual pixel a pixel
+      if (t === '>') {
+        ctx.fillRect(cx-6, cy-1, 10, 3);
+        ctx.fillRect(cx+1, cy-4, 3, 9);
+        ctx.fillRect(cx+3, cy-6, 3, 3);
+        ctx.fillRect(cx+3, cy+4, 3, 3);
+      } else {
+        ctx.fillRect(cx-4, cy-1, 10, 3);
+        ctx.fillRect(cx-6, cy-4, 3, 9);
+        ctx.fillRect(cx-8, cy-6, 3, 3);
+        ctx.fillRect(cx-8, cy+4, 3, 3);
+      }
+      break;
+  }
+
+  // Sprite del jugador
+  if (isPlayer) _drawPlayer(ctx, dx, dy);
+}
+
+function _drawPlayer(ctx, dx, dy) {
+  const p = window.player;
+  const S = TS, cx = dx + S/2|0, cy = dy + S/2|0;
+  const [bc, sc] = CHAR_COL[p.char.id] || ['#888','#444'];
+  const bob = (_tick >> 3) & 1;   // sube/baja 1px cada 8 frames
+
+  // Sombra
+  ctx.fillStyle = 'rgba(0,0,0,0.28)';
+  ctx.fillRect(cx-5, cy+8-bob, 10, 3);
+
+  // Patas (detrás del cuerpo)
+  ctx.fillStyle = sc;
+  ctx.fillRect(cx-9, cy-1+bob, 6, 2);  // izq arriba
+  ctx.fillRect(cx-9, cy+2+bob, 6, 2);  // izq abajo
+  ctx.fillRect(cx+3, cy-1+bob, 6, 2);  // der arriba
+  ctx.fillRect(cx+3, cy+2+bob, 6, 2);  // der abajo
+
+  // Abdomen
+  ctx.fillStyle = bc;
+  ctx.fillRect(cx-4, cy-1+bob, 8, 8);
+  ctx.fillStyle = sc;
+  ctx.fillRect(cx-3, cy+1+bob, 6, 2);  // línea del segmento
+
+  // Tórax + cabeza
+  ctx.fillStyle = bc;
+  ctx.fillRect(cx-3, cy-5+bob, 6, 6);
+  ctx.fillRect(cx-2, cy-9+bob, 5, 5);
+
+  // Ojos
+  ctx.fillStyle = '#f8f8f8';
+  ctx.fillRect(cx-2, cy-8+bob, 2, 2);
+  ctx.fillRect(cx+1, cy-8+bob, 2, 2);
+
+  // Antenas
+  ctx.fillStyle = sc;
+  ctx.fillRect(cx-4, cy-13+bob, 2, 5);
+  ctx.fillRect(cx+2, cy-13+bob, 2, 5);
+  ctx.fillRect(cx-6, cy-14+bob, 2, 2);
+  ctx.fillRect(cx+4, cy-14+bob, 2, 2);
+}
+
+function _drawCanvas() {
+  const canvas = document.getElementById('map-canvas');
+  if (!canvas || !worldState) return;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  const m = currentMap();
+  const { x: px, y: py, biomeIndex } = worldState;
+  const pal = PAL[BIOMES[biomeIndex].id];
+
+  const halfW = VW >> 1, halfH = VH >> 1;
+  const maxLeft = Math.max(0, m[0].length - VW);
+  const maxTop  = Math.max(0, m.length - VH);
+  const vpLeft = Math.min(Math.max(0, px - halfW), maxLeft);
+  const vpTop  = Math.min(Math.max(0, py - halfH), maxTop);
+
+  for (let row = 0; row < VH; row++) {
+    for (let col = 0; col < VW; col++) {
+      const mx = vpLeft + col, my = vpTop + row;
+      const t = (my >= 0 && my < m.length && mx >= 0 && mx < m[0].length) ? m[my][mx] : '#';
+      _tile(ctx, t, col * TS, row * TS, pal, mx === px && my === py);
+    }
+  }
+}
 
 function initWorld() {
   worldState = {
@@ -130,10 +343,26 @@ function initWorld() {
     lastMove: 0,
   };
   spawnAt('S');
-  renderMap();
+  _sizeCanvas();
+  _startMapLoop();
 }
 
 function currentMap() { return worldState.maps[worldState.biomeIndex]; }
+
+function _sizeCanvas() {
+  const canvas = document.getElementById('map-canvas');
+  if (!canvas) return;
+  canvas.width  = VW * TS;
+  canvas.height = VH * TS;
+}
+
+function renderMap() {
+  // Actualiza solo el banner de nombre; el canvas se redibuya via RAF
+  if (!worldState) return;
+  const biome = BIOMES[worldState.biomeIndex];
+  const banner = document.getElementById('map-banner');
+  if (banner) banner.textContent = `${biome.emoji} ${biome.name}`;
+}
 
 function spawnAt(ch) {
   const m = currentMap();
@@ -516,6 +745,7 @@ function showEndScreen(victory) {
 function resetGame() {
   window.player = null;
   window._lastEnemy = null;
+  _stopMapLoop();
   stopMusic();
   showScreen('screen-title');
 }
