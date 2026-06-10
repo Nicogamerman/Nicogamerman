@@ -26,10 +26,12 @@ function startCombat(enemy, biome) {
     summoned: null,
   };
 
+  sfxEncounter();
+  playMusic('battle');
   showScreen('screen-combat');
   renderCombat();
   logClear();
-  addLog(`💥 ¡Un ${e.name} ${e.emoji} apareció!`, 'system');
+  addLog(`💥 ¡Un ${e.name} apareció!`, 'system');
 }
 
 function renderCombat() {
@@ -439,13 +441,17 @@ async function endCombat(victory, fled = false) {
   const p = window.player;
 
   if (fled) {
+    sfxFlee();
     await delay(500);
     showScreen('screen-world');
     refreshWorldHUD();
+    playMusic('world');
     return;
   }
 
   if (victory && e) {
+    stopMusic();
+    sfxVictory();
     onEnemyDefeated(e);
     p.gold = (p.gold || 0) + e.gold;
     addLog(`✅ ¡Venciste a ${e.name}!`, 'system');
@@ -472,13 +478,17 @@ async function endCombat(victory, fled = false) {
     if (leveled) return;
     showScreen('screen-world');
     refreshWorldHUD();
+    playMusic('world');
   } else if (!victory) {
+    stopMusic();
+    sfxDefeat();
     await delay(800);
     showEndScreen(false);
   }
 }
 
 function animateHit(id) {
+  sfxHit();
   const el = document.getElementById(id);
   if (!el) return;
   el.classList.add('shake');

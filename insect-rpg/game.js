@@ -91,6 +91,7 @@ function startGame(char) {
   initWorld();
   showScreen('screen-world');
   refreshWorldHUD();
+  playMusic('world');
 }
 
 // ─── WORLD HUD ────────────────────────────────
@@ -155,7 +156,7 @@ function movePlayer(dx, dy) {
   if (ny < 0 || ny >= m.length || nx < 0 || nx >= m[0].length) return;
 
   const tile = m[ny][nx];
-  if (tile === '#' || tile === '~') return;
+  if (tile === '#' || tile === '~') { sfxBump(); return; }
 
   const biome = BIOMES[worldState.biomeIndex];
 
@@ -175,9 +176,11 @@ function movePlayer(dx, dy) {
     const next = BIOMES[worldState.biomeIndex + 1];
     if (!next) return;
     if (window.player.level < next.minLevel) {
+      sfxBump();
       mapMessage(`🔒 Necesitas nivel ${next.minLevel} para ${next.name}.`);
       return;
     }
+    sfxDoor();
     worldState.biomeIndex++;
     spawnAt('<');
     renderMap();
@@ -185,6 +188,7 @@ function movePlayer(dx, dy) {
     return;
   }
   if (tile === '<') {
+    sfxDoor();
     worldState.biomeIndex--;
     spawnAt(worldState.biomeIndex === 0 ? 'S' : '>');
     renderMap();
@@ -201,11 +205,13 @@ function movePlayer(dx, dy) {
     const item = pool[Math.floor(Math.random() * pool.length)];
     window.player.inventory.push(item);
     applyPermanentItem(item);
+    sfxItem();
     mapMessage(`¡Encontraste ${ITEMS[item].emoji} ${item}!`);
   } else if (tile === 'H') {
     const p = window.player;
     if (p.stats.hp < p.stats.maxHp) {
       p.stats.hp = p.stats.maxHp;
+      sfxHeal();
       mapMessage('🌼 Descansaste entre las flores. ¡HP restaurado!');
       refreshWorldHUD();
       return;
@@ -298,6 +304,7 @@ function bindControls() {
     if (!document.getElementById('screen-world').classList.contains('active')) return;
     if (!document.getElementById('modal-inventory').classList.contains('hidden')) return;
     if (!document.getElementById('modal-status').classList.contains('hidden')) return;
+    if (!document.getElementById('modal-worldmap').classList.contains('hidden')) return;
     e.preventDefault();
     movePlayer(dir[0], dir[1]);
   });
@@ -345,6 +352,7 @@ function gainXP(amount) {
     p.stats.atk += 2;
     p.stats.def += 1;
     p.stats.spd += 1;
+    sfxLevelUp();
 
     refreshWorldHUD();
 
@@ -382,12 +390,15 @@ function triggerEvolution(evo) {
   p.currentEmoji = evo.emoji;
   p.evoIndex++;
 
+  stopMusic();
+  sfxEvolve();
   showScreen('screen-evolution');
 }
 
 function finishEvolution() {
   showScreen('screen-world');
   refreshWorldHUD();
+  playMusic('world');
 }
 
 // ─── INVENTORY ────────────────────────────────
@@ -505,7 +516,31 @@ function showEndScreen(victory) {
 function resetGame() {
   window.player = null;
   window._lastEnemy = null;
+  stopMusic();
   showScreen('screen-title');
+}
+
+// ─── MAPA DEL MUNDO (resumen de progreso) ────
+function showWorldMap() {
+  const p = window.player;
+  const content = document.getElementById('worldmap-content');
+  content.innerHTML = '<div class="worldmap-list">' + BIOMES.map((b, i) => {
+    const isCurrent = worldState && worldState.biomeIndex === i;
+    const unlocked = p.level >= b.minLevel;
+    const boss = b.enemies.find(e => e.isBoss);
+    const bossDone = worldState && worldState.bossDefeated[i];
+    let status;
+    if (isCurrent) status = '📍 Estás aquí';
+    else if (!unlocked) status = `🔒 Nivel ${b.minLevel}`;
+    else status = '✅ Disponible';
+    const bossTxt = boss ? (bossDone ? ` · Jefe vencido ✅` : ` · Jefe: ${boss.emoji} ${boss.name}`) : '';
+    return `<div class="worldmap-row ${isCurrent ? 'current' : ''} ${unlocked ? '' : 'locked'}">
+      <span class="wm-emoji">${b.emoji}</span>
+      <span class="wm-name">${b.name}</span>
+      <span class="wm-status">${status}${bossTxt}</span>
+    </div>`;
+  }).join('<div class="wm-arrow">▼</div>') + '</div>';
+  document.getElementById('modal-worldmap').classList.remove('hidden');
 }
 
 // ─── BOOTSTRAP ───────────────────────────────
