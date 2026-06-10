@@ -34,7 +34,7 @@ function showCharDetail(char, cardEl) {
   const detail = document.getElementById('char-detail');
   detail.classList.remove('hidden');
 
-  document.getElementById('detail-sprite').textContent = char.emoji;
+  document.getElementById('detail-sprite').innerHTML = char.emoji;
   document.getElementById('detail-name').textContent = char.name;
   document.getElementById('detail-lore').textContent = char.lore;
 
@@ -97,7 +97,7 @@ function startGame(char) {
 function refreshWorldHUD() {
   const p = window.player;
   if (!p) return;
-  document.getElementById('hud-sprite').textContent = p.currentEmoji;
+  document.getElementById('hud-sprite').innerHTML = p.currentEmoji;
   document.getElementById('hud-name').textContent = p.currentName;
   document.getElementById('hud-evo').textContent = `Etapa ${p.evoIndex + 1}/4`;
   document.getElementById('hud-level').textContent = p.level;
@@ -202,8 +202,8 @@ function triggerEvolution(evo) {
   const p = window.player;
   const before = { name: p.currentName, emoji: p.currentEmoji };
 
-  document.getElementById('evo-before').textContent = before.emoji;
-  document.getElementById('evo-after').textContent = evo.emoji;
+  document.getElementById('evo-before').innerHTML = before.emoji;
+  document.getElementById('evo-after').innerHTML = evo.emoji;
   document.getElementById('evo-title').textContent = `¡Evolución! → ${evo.name}`;
 
   const bonuses = evo.bonuses;

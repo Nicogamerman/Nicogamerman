@@ -2,6 +2,40 @@
 //  DEFINICIÓN DE PERSONAJES
 // ═══════════════════════════════════════════════
 
+// No existe emoji de mantis en Unicode, así que se dibuja como sprite pixel-art.
+const PIXEL_PALETTE = { D: '#0f380f', G: '#306230', L: '#8bac0f', E: '#000000' };
+
+function pixelSprite(rows, palette = PIXEL_PALETTE) {
+  const h = rows.length, w = rows[0].length;
+  let rects = '';
+  rows.forEach((row, y) => {
+    [...row].forEach((ch, x) => {
+      const c = palette[ch];
+      if (c) rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`;
+    });
+  });
+  return `<svg class="pixel-sprite" viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${rects}</svg>`;
+}
+
+const MANTIS_SPRITE = pixelSprite([
+  '...D....D.......',
+  '....D..D........',
+  '....DDDD........',
+  '...DLELLD.......',
+  '....DLLD........',
+  '.....DLD........',
+  '...DDDLD........',
+  '..D.DLLLD.......',
+  '..D.DDLLLDDDD...',
+  '...DD.DLLGGGGD..',
+  '.......DLGGGGGD.',
+  '........DDDDDD..',
+  '......D..D..D...',
+  '.....D...D...D..',
+  '....D....D....D.',
+  '................',
+]);
+
 const CHARACTERS = [
   {
     id: 'ant',
@@ -44,7 +78,7 @@ const CHARACTERS = [
   {
     id: 'mantis',
     name: 'Mantis Religiosa',
-    emoji: '🦗',
+    emoji: MANTIS_SPRITE,
     lore: 'Depredadora de instinto puro. La Mantis golpea antes de que el enemigo pueda reaccionar y tiene alta probabilidad de golpes críticos letales.',
     pros: ['Mayor daño de ataque básico', 'Alta probabilidad de crítico (25%)', 'Golpea primero siempre'],
     cons: ['HP muy baja', 'Defensa frágil', 'Sin recuperación de vida'],
@@ -54,7 +88,7 @@ const CHARACTERS = [
       { id: 'deathblow', name: '💀 Mandíbula Fatal', desc: 'Si el enemigo tiene menos de 30% HP, inflige daño masivo garantizado.', mpCost: 0, cooldown: 5, currentCD: 0 }
     ],
     evolutions: [
-      { level: 1,  name: 'Mantis Religiosa',    emoji: '🦗',  bonuses: {} },
+      { level: 1,  name: 'Mantis Religiosa',    emoji: MANTIS_SPRITE,  bonuses: {} },
       { level: 5,  name: 'Mantis Cazadora',      emoji: '🔪',  bonuses: { atk: 12, spd: 5, eva: 8 } },
       { level: 10, name: 'Depredadora Sombra',   emoji: '🥷',  bonuses: { atk: 20, spd: 8, eva: 12, hp: 20 } },
       { level: 15, name: 'Señor de las Cuchillas', emoji: '⚔️', bonuses: { atk: 30, spd: 12, eva: 18, hp: 30, def: 8 } }

@@ -38,12 +38,12 @@ function renderCombat() {
   const p = window.player;
 
   // Enemy side
-  document.getElementById('enemy-sprite').textContent = enemy.emoji;
+  document.getElementById('enemy-sprite').innerHTML = enemy.emoji;
   document.getElementById('enemy-name').textContent = `${enemy.name} ${enemy.isBoss ? '⭐' : ''}`;
   updateBar('bar-enemy-hp', 'txt-enemy-hp', enemy.currentHp, enemy.hp);
 
   // Player side
-  document.getElementById('player-sprite').textContent = p.currentEmoji;
+  document.getElementById('player-sprite').innerHTML = p.currentEmoji;
   document.getElementById('player-combat-name').textContent = p.currentName;
   updateBar('bar-player-hp', 'txt-player-combat-hp', p.stats.hp, p.stats.maxHp);
 
