@@ -69,14 +69,32 @@ Construyo soluciones internas y automatizaciones con **Python y Django** en **Cl
 
 ## `> ESTADÍSTICAS DEL SISTEMA`
 
+<div align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&size=14&duration=2200&pause=400&color=00FF41&center=true&vCenter=true&width=700&lines=%3E+scanning+repositories...+%5B%E2%96%88%E2%96%88%E2%96%88%E2%96%88%E2%96%88%E2%96%88%E2%96%88%E2%96%88%E2%96%88%E2%96%88%5D+100%25;%3E+tracing+commit+activity...+OK;%3E+compiling+system+report...+DONE;%3E+rendering+output+stream_" alt="scan" />
+</div>
+
+<br>
+
 <p align="center">
   <img src="https://github-trophies.vercel.app/?username=nicogamerman&theme=matrix&margin-w=10&no-bg=true" alt="trophies"/>
 </p>
 
 <p align="center">
-  <img src="https://github-readme-stats-fast.vercel.app/api/?username=nicogamerman&show_icons=true&bg_color=010409&title_color=00FF41&text_color=00FF41&icon_color=00FF41&border_color=00FF41" alt="stats" height="165"/>
-  <img src="https://github-readme-stats-fast.vercel.app/api/top-langs/?username=nicogamerman&bg_color=010409&title_color=00FF41&text_color=00FF41&icon_color=00FF41&border_color=00FF41&layout=compact" alt="top langs" height="165"/>
+  <img src="https://github-readme-stats-fast.vercel.app/api/?username=nicogamerman&show_icons=true&bg_color=010409&title_color=00FF41&text_color=00FF41&icon_color=00FF41&border_color=00FF41&ring_color=00FF41&custom_title=SYSTEM+REPORT" alt="stats" height="165"/>
+  <img src="https://github-readme-stats-fast.vercel.app/api/top-langs/?username=nicogamerman&bg_color=010409&title_color=00FF41&text_color=00FF41&icon_color=00FF41&border_color=00FF41&layout=compact&custom_title=SOURCE+CODE+ANALYSIS" alt="top langs" height="165"/>
 </p>
+
+<p align="center">
+  <img src="https://github-readme-stats-fast.vercel.app/api/streak?username=nicogamerman&theme=chartreuse-dark" alt="streak"/>
+</p>
+
+<p align="center">
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=nicogamerman&bg_color=010409&color=00FF41&line=00FF41&point=39FF14&area=true&area_color=003B00&hide_border=false&border_color=00FF41&custom_title=%3E%20NETWORK%20TRAFFIC%20MONITOR%20%E2%80%94%20COMMIT%20STREAM" alt="activity graph"/>
+</p>
+
+<div align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&size=13&duration=3000&pause=1000&color=008F11&center=true&vCenter=true&width=700&lines=%3E+end+of+report.+connection+stable.;%3E+wake+up%2C+neo..._" alt="eof" />
+</div>
 
 ---
 
