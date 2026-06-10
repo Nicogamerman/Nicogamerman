@@ -1,91 +1,93 @@
-<h1 align="center">
-  Hola, soy Nicolás Gamerman
-  <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="35">
-</h1>
+<div align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&size=13&duration=1800&pause=200&color=00FF41&center=true&vCenter=true&width=700&lines=INITIALIZING...;LOADING+SYSTEM+PROFILE...;DECRYPTING+DATA...;.+.+.+.+.+.+.+.+.+.+.+.+.+.+.;ACCESS+GRANTED." alt="boot" />
+</div>
+
+<div align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Share+Tech+Mono&weight=700&size=30&pause=1000&color=00FF41&center=true&vCenter=true&width=700&lines=NICOLAS+GAMERMAN;BACKEND+DEVELOPER;CYBERSECURITY+%26+RED+TEAM;CLARO+ARGENTINA" alt="title" />
+</div>
+
+<br>
 
 <p align="center">
-  <a href="https://github.com/DenverCoder1/readme-typing-svg">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=22&pause=1000&color=0E75B6&center=true&vCenter=true&width=500&lines=Full+Stack+%26+Backend+Developer;Python+%2F+Django+%7C+PHP+%2F+Laravel;Cybersecurity+%26+Red+Team+Enthusiast;Always+learning+new+things+%F0%9F%9A%80" alt="Typing SVG" />
-  </a>
+  <img src="https://komarev.com/ghpvc/?username=nicogamerman&label=PROFILE+VIEWS&color=00FF41&style=flat-square&labelColor=0d1117" />
+  <img src="https://img.shields.io/github/followers/nicogamerman?label=FOLLOWERS&style=flat-square&color=00FF41&labelColor=0d1117" />
+</p>
+
+---
+
+## `> OPERADOR`
+
+```bash
+$ whoami
+  nicolasgamerman  —  Backend Developer @ Claro Argentina
+
+$ uname -a
+  Córdoba, Argentina  |  Analista de Sistemas (en curso)
+
+$ cat /etc/skills
+  Python · Django · PHP · Laravel · JavaScript · Linux · Red Team
+
+$ echo $PASSION
+  Ciberseguridad · Pentesting · Automatización de datos
+
+$ echo $CONTACT
+  gamermanico@gmail.com
+```
+
+Construyo soluciones internas y automatizaciones con **Python y Django** en **Claro Argentina**. Me especializo en **ciberseguridad** con experiencia activa en **pentesting y Red Team**. Finalizando la carrera de **Analista de Sistemas**.
+
+---
+
+## `> ARSENAL`
+
+**`[ BACKEND & SCRIPTING ]`**
+
+![Python](https://img.shields.io/badge/Python-0D1117?style=flat-square&logo=python&logoColor=00FF41)
+![Django](https://img.shields.io/badge/Django-0D1117?style=flat-square&logo=django&logoColor=00FF41)
+![PHP](https://img.shields.io/badge/PHP-0D1117?style=flat-square&logo=php&logoColor=00FF41)
+![Laravel](https://img.shields.io/badge/Laravel-0D1117?style=flat-square&logo=laravel&logoColor=00FF41)
+
+**`[ FRONTEND ]`**
+
+![JavaScript](https://img.shields.io/badge/JavaScript-0D1117?style=flat-square&logo=javascript&logoColor=00FF41)
+![HTML5](https://img.shields.io/badge/HTML5-0D1117?style=flat-square&logo=html5&logoColor=00FF41)
+![CSS3](https://img.shields.io/badge/CSS3-0D1117?style=flat-square&logo=css3&logoColor=00FF41)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-0D1117?style=flat-square&logo=bootstrap&logoColor=00FF41)
+
+**`[ BASES DE DATOS & HERRAMIENTAS ]`**
+
+![MySQL](https://img.shields.io/badge/MySQL-0D1117?style=flat-square&logo=mysql&logoColor=00FF41)
+![Git](https://img.shields.io/badge/Git-0D1117?style=flat-square&logo=git&logoColor=00FF41)
+![Linux](https://img.shields.io/badge/Linux-0D1117?style=flat-square&logo=linux&logoColor=00FF41)
+
+**`[ DISEÑO ]`**
+
+![Photoshop](https://img.shields.io/badge/Photoshop-0D1117?style=flat-square&logo=adobephotoshop&logoColor=00FF41)
+![Illustrator](https://img.shields.io/badge/Illustrator-0D1117?style=flat-square&logo=adobeillustrator&logoColor=00FF41)
+
+---
+
+## `> ESTADÍSTICAS DEL SISTEMA`
+
+<p align="center">
+  <img src="https://github-trophies.vercel.app/?username=nicogamerman&theme=matrix&margin-w=10&no-bg=true" alt="trophies"/>
 </p>
 
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=nicogamerman&label=Profile+views&color=0e75b6&style=flat-square" alt="nicogamerman" />
-  <img src="https://img.shields.io/github/followers/nicogamerman?label=Followers&style=flat-square&color=0e75b6" alt="followers" />
+  <img src="https://github-readme-stats-fast.vercel.app/api/?username=nicogamerman&show_icons=true&bg_color=010409&title_color=00FF41&text_color=00FF41&icon_color=00FF41&border_color=00FF41" alt="stats" height="165"/>
+  <img src="https://github-readme-stats-fast.vercel.app/api/top-langs/?username=nicogamerman&bg_color=010409&title_color=00FF41&text_color=00FF41&icon_color=00FF41&border_color=00FF41&layout=compact" alt="top langs" height="165"/>
 </p>
 
 ---
 
-## Sobre mí
+## `> CONEXIONES ACTIVAS`
 
-Soy desarrollador **Full Stack / Backend** con base en **Córdoba, Argentina**, actualmente trabajando en **Claro Argentina**, donde construyo soluciones para los departamentos internos de la empresa usando **Python y Django**, y diseño automatizaciones para la recolección y análisis de datos.
-
-Me apasiona la **ciberseguridad**: me he formado en pentesting y tengo experiencia práctica en el campo del **Red Team**, fortaleciendo habilidades en análisis de vulnerabilidades y seguridad web.
-
-Actualmente estoy finalizando mi carrera de **Analista de Sistemas**, donde consolido conocimientos en análisis, diseño y desarrollo de sistemas de información.
-
-- 🏢 Trabajo en **Claro Argentina** como Desarrollador Backend
-- 🔐 Apasionado por la **ciberseguridad** y el **pentesting (Red Team)**
-- 🎓 Finalizando la carrera de **Analista de Sistemas**
-- 🌱 Actualmente profundizando en **Python / Django**
-- 🐧 Fan de **Linux** para desarrollo y seguridad
-- 📫 Contacto: **gamermanico@gmail.com**
-
----
-
-## Stack Tecnológico
-
-### Backend & Scripting
-<p>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/django/django-plain.svg" alt="django" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/php/php-original.svg" alt="php" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/laravel/laravel-original.svg" alt="laravel" width="40" height="40"/>
-</p>
-
-### Frontend
-<p>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-plain-wordmark.svg" alt="bootstrap" width="40" height="40"/>
-</p>
-
-### Bases de Datos & Herramientas
-<p>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original-wordmark.svg" alt="mysql" width="40" height="40"/>
-  <img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" alt="linux" width="40" height="40"/>
-</p>
-
-### Diseño
-<p>
-  <img src="https://www.vectorlogo.zone/logos/adobe_illustrator/adobe_illustrator-icon.svg" alt="illustrator" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/photoshop/photoshop-line.svg" alt="photoshop" width="40" height="40"/>
-</p>
-
----
-
-## Conectemos
-
-<p>
+<p align="center">
   <a href="https://linkedin.com/in/nicolasgamerman" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-nicolasgamerman-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
+    <img src="https://img.shields.io/badge/LINKEDIN-0D1117?style=for-the-badge&logo=linkedin&logoColor=00FF41" alt="LinkedIn"/>
   </a>
+  &nbsp;
   <a href="mailto:gamermanico@gmail.com">
-    <img src="https://img.shields.io/badge/Email-gamermanico@gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"/>
+    <img src="https://img.shields.io/badge/EMAIL-0D1117?style=for-the-badge&logo=gmail&logoColor=00FF41" alt="Email"/>
   </a>
-</p>
-
----
-
-## Estadísticas de GitHub
-
-<p align="center">
-  <img src="https://github-trophies.vercel.app/?username=nicogamerman&theme=flat&margin-w=10&margin-h=10&no-bg=true" alt="nicogamerman trophies"/>
-</p>
-
-<p align="center">
-  <img src="https://github-readme-stats-fast.vercel.app/api/?username=nicogamerman&show_icons=true&locale=en&theme=default&hide_border=true" alt="nicogamerman stats" height="165"/>
-  <img src="https://github-readme-stats-fast.vercel.app/api/top-langs/?username=nicogamerman&show_icons=true&locale=en&layout=compact&hide_border=true" alt="nicogamerman top langs" height="165"/>
 </p>
