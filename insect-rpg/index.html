@@ -90,8 +90,18 @@
   </div>
 
   <div class="world-container">
-    <h2 class="section-title">Elige una Zona</h2>
-    <div id="biome-grid" class="biome-grid"></div>
+    <div id="map-banner" class="map-banner"></div>
+    <div id="map-viewport" class="map-viewport"></div>
+    <div id="map-message" class="map-message hidden"></div>
+    <div class="map-controls">
+      <div class="dpad">
+        <button class="dpad-btn up"    data-dx="0"  data-dy="-1">▲</button>
+        <button class="dpad-btn left"  data-dx="-1" data-dy="0">◀</button>
+        <button class="dpad-btn down"  data-dx="0"  data-dy="1">▼</button>
+        <button class="dpad-btn right" data-dx="1"  data-dy="0">▶</button>
+      </div>
+      <p class="map-hint">Muévete con las flechas / WASD o el D-pad.<br/>La hierba alta 🌿 esconde insectos salvajes.</p>
+    </div>
   </div>
 
   <!-- Modales -->

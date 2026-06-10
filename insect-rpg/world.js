@@ -89,6 +89,80 @@ const BIOMES = [
   }
 ];
 
+// ═══════════════════════════════════════════════
+//  MAPAS TOP-DOWN (uno por bioma)
+//  Leyenda: # muro/árbol · . suelo · , hierba alta (encuentros)
+//           ~ agua · I ítem · H flor curativa · B jefe
+//           > salida al siguiente bioma · < volver · S spawn inicial
+// ═══════════════════════════════════════════════
+
+const MAPS = [
+  [ // Jardín Salvaje
+    '##################',
+    '#S..,,,..I...,,,.#',
+    '#.#.,,#.####.,,#.#',
+    '#.#...#..I.#...,,#',
+    '#,,##.####.#.##,,#',
+    '#,,I..#H...#..,,.#',
+    '#.###.#.####.#.#.#',
+    '#..,,...,,,..#I..#',
+    '#.#,,#.#,,#..#.#.#',
+    '#.#..,.#.,,,....,#',
+    '#...#..#..,,..,,.>',
+    '##################',
+  ],
+  [ // Bosque Oscuro
+    '##################',
+    '#<.,,,..##..,,,..#',
+    '#.##,,#.##.#,,##.#',
+    '#..#...I...#..I..#',
+    '#,.####.##.####.,#',
+    '#,,..H#.##.#..,,.#',
+    '#.##.##.,,.##.##.#',
+    '#..#.I..,,...#...#',
+    '#.##.####.##.##.##',
+    '#.,,,.#....#,,,.##',
+    '#..,,.#.I..#.,B.>#',
+    '##################',
+  ],
+  [ // Cueva Cristalina
+    '##################',
+    '#<...##...,,..##.#',
+    '##.#.##.#.##.#.#.#',
+    '#..#....#..#.#..,#',
+    '#.##.###.#.#.##.,#',
+    '#..#.#I..#.#..#..#',
+    '#,.#.#.###H#.#.#.#',
+    '#,.....#...#.#I..#',
+    '#.###.##.###.###.#',
+    '#...#.,,,..#.....#',
+    '#.I.#.,,,..#.B..>#',
+    '##################',
+  ],
+  [ // Pantano Ancestral
+    '##################',
+    '#<..,,..~~..,,,..#',
+    '#.#.,,#.~~.#,,##.#',
+    '#.#...#....#...,,#',
+    '#,,##.#.##.#.##,,#',
+    '#,,..H#.~~.#..,,.#',
+    '#.###.#.~~.##.#..#',
+    '#..,,...~~...#.I.#',
+    '#.#,,#.#~~#..#.#.#',
+    '#I#..,.#..,,....,#',
+    '#...#..#..,,...B.#',
+    '##################',
+  ],
+];
+
+// Ítems que pueden aparecer en los tiles "I" de cada bioma
+const MAP_ITEMS = {
+  garden: ['Hoja Curativa', 'Pigmento Rojo', 'Concha Dura', 'Antena Rota'],
+  forest: ['Hoja Curativa', 'Garra de Ciempiés', 'Aguijón Venenoso', 'Cuerno Macizo'],
+  cave:   ['Polvo Cegador', 'Ojo de Cristal', 'Pinza de Escorpión', 'Hoja Curativa'],
+  swamp:  ['Glándula de Veneno', 'Escama Acuática', 'Mandíbula Infecciosa', 'Hoja Curativa'],
+};
+
 const ITEMS = {
   'Hoja Curativa':      { emoji: '🍃', desc: 'Recupera 30 HP.', effect: 'heal', value: 30 },
   'Antena Rota':        { emoji: '📡', desc: 'Aumenta SPD +3 permanentemente.', effect: 'stat', stat: 'spd', value: 3 },

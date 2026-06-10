@@ -88,7 +88,7 @@ function startGame(char) {
     passives: [],
     gold: 0,
   };
-  initBiomeGrid();
+  initWorld();
   showScreen('screen-world');
   refreshWorldHUD();
 }
@@ -105,55 +105,217 @@ function refreshWorldHUD() {
   const xpPct = (p.xp / p.xpToNext) * 100;
   document.getElementById('bar-xp').style.width = xpPct + '%';
   document.getElementById('txt-xp').textContent = `${p.xp}/${p.xpToNext}`;
+  renderMap();
 }
 
-// ─── BIOME GRID ───────────────────────────────
-function initBiomeGrid() {
-  const grid = document.getElementById('biome-grid');
-  grid.innerHTML = '';
-  BIOMES.forEach(biome => {
-    const card = document.createElement('div');
-    card.className = 'biome-card';
-    card.id = `biome-${biome.id}`;
-    card.style.setProperty('--biome-color', biome.color);
-    card.innerHTML = `
-      <div class="biome-emoji">${biome.emoji}</div>
-      <div class="biome-name">${biome.name}</div>
-      <div class="biome-desc">${biome.desc}</div>
-      <div class="biome-req">Nivel mín: ${biome.minLevel}</div>
-    `;
-    card.onclick = () => enterBiome(biome);
-    grid.appendChild(card);
-  });
-  updateBiomeLocks();
+// ─── MOTOR DE MAPA TOP-DOWN ──────────────────
+let worldState = null;
+
+const TILE_EMOJI = {
+  garden: { '#': '🌳', ',': '🌿', 'H': '🌼', 'I': '🎁' },
+  forest: { '#': '🌲', ',': '🌿', 'H': '🌼', 'I': '🎁' },
+  cave:   { '#': '🪨', ',': '🍄', 'H': '🌼', 'I': '🎁' },
+  swamp:  { '#': '🌴', ',': '🌾', 'H': '🌼', 'I': '🎁', '~': '〰️' },
+};
+
+const ENCOUNTER_RATE = 0.16;
+
+function initWorld() {
+  worldState = {
+    biomeIndex: 0,
+    maps: MAPS.map(m => m.map(row => row.split(''))),
+    bossDefeated: BIOMES.map(() => false),
+    x: 1, y: 1,
+    lastMove: 0,
+  };
+  spawnAt('S');
+  renderMap();
 }
 
-function updateBiomeLocks() {
-  const p = window.player;
-  BIOMES.forEach(biome => {
-    const card = document.getElementById(`biome-${biome.id}`);
-    if (!card) return;
-    const locked = p.level < biome.minLevel;
-    card.classList.toggle('locked', locked);
-    card.querySelector('.biome-req').textContent = locked
-      ? `🔒 Requiere Nivel ${biome.minLevel}`
-      : `✅ Disponible (Nv. ${biome.minLevel}+)`;
-  });
+function currentMap() { return worldState.maps[worldState.biomeIndex]; }
+
+function spawnAt(ch) {
+  const m = currentMap();
+  for (let y = 0; y < m.length; y++)
+    for (let x = 0; x < m[y].length; x++)
+      if (m[y][x] === ch) { worldState.x = x; worldState.y = y; return; }
 }
 
-function enterBiome(biome) {
-  const p = window.player;
-  if (p.level < biome.minLevel) {
-    alert(`Necesitas nivel ${biome.minLevel} para entrar al ${biome.name}.`);
+function movePlayer(dx, dy) {
+  if (!worldState || !window.player) return;
+  if (typeof combatState !== 'undefined' && combatState) return;
+  if (!document.getElementById('screen-world').classList.contains('active')) return;
+
+  const now = Date.now();
+  if (now - worldState.lastMove < 110) return;
+  worldState.lastMove = now;
+
+  const m = currentMap();
+  const nx = worldState.x + dx, ny = worldState.y + dy;
+  if (ny < 0 || ny >= m.length || nx < 0 || nx >= m[0].length) return;
+
+  const tile = m[ny][nx];
+  if (tile === '#' || tile === '~') return;
+
+  const biome = BIOMES[worldState.biomeIndex];
+
+  // Jefe bloqueando el paso: pelear sin moverse
+  if (tile === 'B') {
+    const boss = biome.enemies.find(e => e.isBoss);
+    if (boss && !worldState.bossDefeated[worldState.biomeIndex]) {
+      mapMessage(`¡${boss.name} bloquea el paso!`);
+      startWildBattle(boss);
+      return;
+    }
+    m[ny][nx] = '.';
+  }
+
+  // Puertas entre biomas
+  if (tile === '>') {
+    const next = BIOMES[worldState.biomeIndex + 1];
+    if (!next) return;
+    if (window.player.level < next.minLevel) {
+      mapMessage(`🔒 Necesitas nivel ${next.minLevel} para ${next.name}.`);
+      return;
+    }
+    worldState.biomeIndex++;
+    spawnAt('<');
+    renderMap();
+    mapMessage(`Entraste a ${next.name} ${next.emoji}`);
     return;
   }
-  // Scale enemies slightly with player level
-  const enemies = biome.enemies;
-  const enemy = enemies[Math.floor(Math.random() * enemies.length)];
-  const scaledEnemy = scaleEnemy(enemy, p.level);
-  window._lastEnemy = scaledEnemy;
-  window._lastBiome = biome;
-  startCombat(scaledEnemy, biome);
+  if (tile === '<') {
+    worldState.biomeIndex--;
+    spawnAt(worldState.biomeIndex === 0 ? 'S' : '>');
+    renderMap();
+    mapMessage(`Volviste a ${BIOMES[worldState.biomeIndex].name}`);
+    return;
+  }
+
+  worldState.x = nx;
+  worldState.y = ny;
+
+  if (tile === 'I') {
+    m[ny][nx] = '.';
+    const pool = MAP_ITEMS[biome.id];
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    window.player.inventory.push(item);
+    applyPermanentItem(item);
+    mapMessage(`¡Encontraste ${ITEMS[item].emoji} ${item}!`);
+  } else if (tile === 'H') {
+    const p = window.player;
+    if (p.stats.hp < p.stats.maxHp) {
+      p.stats.hp = p.stats.maxHp;
+      mapMessage('🌼 Descansaste entre las flores. ¡HP restaurado!');
+      refreshWorldHUD();
+      return;
+    }
+  } else if (tile === ',') {
+    if (Math.random() < ENCOUNTER_RATE) {
+      const pool = biome.enemies.filter(e => !e.isBoss);
+      const enemy = pool[Math.floor(Math.random() * pool.length)];
+      renderMap();
+      startWildBattle(enemy);
+      return;
+    }
+  }
+  renderMap();
+}
+
+function startWildBattle(enemy) {
+  const scaled = scaleEnemy(enemy, window.player.level);
+  window._lastEnemy = scaled;
+  window._lastBiome = BIOMES[worldState.biomeIndex];
+  startCombat(scaled, window._lastBiome);
+}
+
+// Llamado desde combat.js al ganar: limpia el tile del jefe
+function onEnemyDefeated(e) {
+  if (e.isBoss && worldState) {
+    worldState.bossDefeated[worldState.biomeIndex] = true;
+    const m = currentMap();
+    for (let y = 0; y < m.length; y++)
+      for (let x = 0; x < m[y].length; x++)
+        if (m[y][x] === 'B') m[y][x] = '.';
+  }
+}
+
+function renderMap() {
+  if (!worldState || !window.player) return;
+  const vp = document.getElementById('map-viewport');
+  if (!vp) return;
+
+  const m = currentMap();
+  const biome = BIOMES[worldState.biomeIndex];
+  const emo = TILE_EMOJI[biome.id];
+  vp.className = 'map-viewport biome-' + biome.id;
+  vp.style.setProperty('--cols', m[0].length);
+  document.getElementById('map-banner').textContent = `${biome.emoji} ${biome.name}`;
+
+  let html = '';
+  for (let y = 0; y < m.length; y++) {
+    for (let x = 0; x < m[y].length; x++) {
+      const t = m[y][x];
+      let cls = 'tile', content = '';
+      if (t === '#')      { cls += ' t-wall';  content = emo['#']; }
+      else if (t === '~') { cls += ' t-water'; content = emo['~'] || ''; }
+      else if (t === ',') { cls += ' t-grass'; content = emo[',']; }
+      else if (t === 'I') { cls += ' t-item';  content = emo['I']; }
+      else if (t === 'H') { cls += ' t-heal';  content = emo['H']; }
+      else if (t === 'B') { cls += ' t-boss';  content = (biome.enemies.find(e => e.isBoss) || {}).emoji || '❓'; }
+      else if (t === '>') { cls += ' t-door';  content = '▶'; }
+      else if (t === '<') { cls += ' t-door';  content = '◀'; }
+      else                { cls += ' t-ground'; }
+
+      const isPlayer = (x === worldState.x && y === worldState.y);
+      html += `<div class="${cls}">${content}${isPlayer ? `<span class="map-player">${window.player.currentEmoji}</span>` : ''}</div>`;
+    }
+  }
+  vp.innerHTML = html;
+}
+
+let _msgTimer = null;
+function mapMessage(text) {
+  const el = document.getElementById('map-message');
+  el.textContent = text;
+  el.classList.remove('hidden');
+  clearTimeout(_msgTimer);
+  _msgTimer = setTimeout(() => el.classList.add('hidden'), 2400);
+}
+
+// ─── CONTROLES ────────────────────────────────
+const KEY_DIRS = {
+  arrowup: [0, -1], w: [0, -1],
+  arrowdown: [0, 1], s: [0, 1],
+  arrowleft: [-1, 0], a: [-1, 0],
+  arrowright: [1, 0], d: [1, 0],
+};
+
+function bindControls() {
+  document.addEventListener('keydown', (e) => {
+    const dir = KEY_DIRS[e.key.toLowerCase()];
+    if (!dir) return;
+    if (!document.getElementById('screen-world').classList.contains('active')) return;
+    if (!document.getElementById('modal-inventory').classList.contains('hidden')) return;
+    if (!document.getElementById('modal-status').classList.contains('hidden')) return;
+    e.preventDefault();
+    movePlayer(dir[0], dir[1]);
+  });
+
+  document.querySelectorAll('.dpad-btn').forEach(btn => {
+    const dx = +btn.dataset.dx, dy = +btn.dataset.dy;
+    let iv = null;
+    const start = (e) => {
+      e.preventDefault();
+      movePlayer(dx, dy);
+      iv = setInterval(() => movePlayer(dx, dy), 160);
+    };
+    const stop = () => { clearInterval(iv); iv = null; };
+    btn.addEventListener('pointerdown', start);
+    btn.addEventListener('pointerup', stop);
+    btn.addEventListener('pointerleave', stop);
+    btn.addEventListener('pointercancel', stop);
+  });
 }
 
 function scaleEnemy(enemy, playerLevel) {
@@ -185,7 +347,6 @@ function gainXP(amount) {
     p.stats.spd += 1;
 
     refreshWorldHUD();
-    updateBiomeLocks();
 
     // Check evolution
     const nextEvo = p.char.evolutions[p.evoIndex + 1];
@@ -350,5 +511,5 @@ function resetGame() {
 // ─── BOOTSTRAP ───────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initCharSelect();
-  document.getElementById('screen-select').addEventListener('click', () => {});
+  bindControls();
 });

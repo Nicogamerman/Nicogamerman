@@ -59,7 +59,7 @@ button {
 /* Borde doble clásico: línea gruesa oscura + filete interior claro */
 .gb-box,
 .combatant-info, .combat-log, .action-panel,
-.char-card, .char-detail, .biome-card, .modal-box,
+.char-card, .char-detail, .modal-box,
 .evo-stats, .trait-box, .hud {
   background: var(--menu-white);
   border: 3px solid var(--gb-dark);
@@ -290,29 +290,128 @@ button {
 @keyframes blinkBar { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
 .bar-wrap span { min-width: 60px; text-align: right; font-size: 0.45rem; white-space: nowrap; }
 
-/* ── BIOME GRID ─────────────────────── */
-.world-container { padding: 0.5rem 1rem 1.5rem; }
+/* ── MAPA TOP-DOWN (overworld Pokémon) ── */
+.world-container { padding: 0.3rem 0.8rem 1.2rem; }
 
-.biome-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 1rem;
-  max-width: 960px;
-  margin: 0 auto;
-}
-
-.biome-card {
-  padding: 1.1rem;
-  cursor: pointer;
+.map-banner {
   text-align: center;
+  font-size: 0.7rem;
+  color: var(--gb-green-d);
+  text-shadow: 2px 2px 0 var(--gb-green-l);
+  margin: 0.3rem 0 0.6rem;
 }
-.biome-card:hover:not(.locked) { background: var(--gb-cream2); }
-.biome-card:hover:not(.locked) .biome-name::before { content: '▶ '; }
-.biome-card.locked { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
-.biome-emoji { font-size: 2.2rem; margin-bottom: 0.5rem; filter: contrast(1.1); }
-.biome-name { font-size: 0.62rem; color: var(--gb-green-d); margin-bottom: 0.5rem; }
-.biome-desc { font-size: 0.48rem; color: var(--gb-dark); line-height: 1.9; margin-bottom: 0.6rem; }
-.biome-req { font-size: 0.48rem; color: var(--gb-green); }
+
+.map-viewport {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 18), 1fr);
+  max-width: 580px;
+  margin: 0 auto;
+  border: 3px solid var(--gb-dark);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 2px var(--gb-cream), 4px 4px 0 var(--gb-green-d);
+  overflow: hidden;
+}
+
+/* Paletas de suelo por bioma */
+.biome-garden { --ground: #b8e088; --grassbg: #88c858; --wallbg: #50a030; --waterbg: #58a8f8; }
+.biome-forest { --ground: #a0d070; --grassbg: #68a848; --wallbg: #2e6020; --waterbg: #58a8f8; }
+.biome-cave   { --ground: #c8c0a8; --grassbg: #a8a088; --wallbg: #585048; --waterbg: #5878a8; }
+.biome-swamp  { --ground: #a8c080; --grassbg: #789858; --wallbg: #406030; --waterbg: #4888b8; }
+
+.tile {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(9px, 2.6vw, 19px);
+  line-height: 1;
+  position: relative;
+  overflow: visible;
+}
+.t-ground { background: var(--ground); }
+.t-grass  { background: var(--grassbg); }
+.t-wall   { background: var(--wallbg); }
+.t-water  { background: var(--waterbg); }
+.t-item   { background: var(--ground); animation: itemBlink 1s steps(2, jump-none) infinite; }
+.t-heal   { background: var(--ground); }
+.t-boss   { background: var(--ground); animation: bossBlink 0.8s steps(2, jump-none) infinite; }
+.t-door   {
+  background: var(--gb-dark);
+  color: var(--gb-cream);
+  font-size: clamp(7px, 2vw, 14px);
+}
+@keyframes itemBlink { 0%,100% { filter: none; } 50% { filter: brightness(1.4); } }
+@keyframes bossBlink { 0%,100% { filter: none; } 50% { filter: brightness(1.3) saturate(2); } }
+
+.map-player {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15em;
+  z-index: 2;
+  filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.45));
+  animation: playerBob 0.8s steps(2, jump-none) infinite;
+}
+@keyframes playerBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
+
+.map-message {
+  max-width: 580px;
+  margin: 0.6rem auto 0;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.55rem;
+  line-height: 1.8;
+  text-align: center;
+  min-height: 2.4em;
+  background: var(--menu-white);
+  border: 3px solid var(--gb-dark);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 2px var(--menu-white), inset 0 0 0 4px var(--shadow-px);
+}
+.map-message.hidden { visibility: hidden; }
+
+/* D-pad estilo Game Boy */
+.map-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.8rem;
+  flex-wrap: wrap;
+}
+.dpad {
+  display: grid;
+  grid-template-areas:
+    '.    up    .'
+    'left mid right'
+    '.    down  .';
+  gap: 3px;
+}
+.dpad-btn {
+  width: 52px;
+  height: 52px;
+  background: var(--gb-dark);
+  color: var(--gb-cream);
+  border: 2px solid #000;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #000;
+}
+.dpad-btn:active { transform: translateY(3px); box-shadow: none; }
+.dpad-btn.up    { grid-area: up; }
+.dpad-btn.down  { grid-area: down; }
+.dpad-btn.left  { grid-area: left; }
+.dpad-btn.right { grid-area: right; }
+
+.map-hint {
+  font-size: 0.5rem;
+  color: var(--gb-green);
+  line-height: 2;
+  text-align: center;
+  max-width: 240px;
+}
 
 /* ── COMBAT SCREEN (layout Pokémon) ─── */
 #screen-combat { padding: 0; }
@@ -548,10 +647,10 @@ button {
   .btn-sm { min-height: 40px; padding: 0.5rem 0.7rem; }
   .inv-item button { min-height: 36px; padding: 0.4rem 0.7rem; }
 
-  .biome-grid { grid-template-columns: 1fr; gap: 0.7rem; }
-  .biome-card { padding: 0.9rem; display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.8rem; text-align: left; align-items: center; }
-  .biome-emoji { grid-row: 1 / 4; font-size: 2.2rem; margin: 0; }
-  .biome-desc { margin-bottom: 0.3rem; }
+  .world-container { padding: 0.2rem 0.4rem 1rem; }
+  .map-hint { display: none; }
+  .dpad-btn { width: 58px; height: 58px; }
+  .map-message { font-size: 0.5rem; margin: 0.4rem 0.3rem 0; }
 
   .evo-form { font-size: 3rem; margin: 0 0.4rem; }
   .modal-box { padding: 0.9rem; max-height: 85vh; }

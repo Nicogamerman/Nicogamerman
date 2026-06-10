@@ -446,6 +446,7 @@ async function endCombat(victory, fled = false) {
   }
 
   if (victory && e) {
+    onEnemyDefeated(e);
     p.gold = (p.gold || 0) + e.gold;
     addLog(`✅ ¡Venciste a ${e.name}!`, 'system');
     addLog(`+${e.xp} XP | +${e.gold} 🪙 Oro`, 'system');
