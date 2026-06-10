@@ -290,83 +290,46 @@ button {
 @keyframes blinkBar { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
 .bar-wrap span { min-width: 60px; text-align: right; font-size: 0.45rem; white-space: nowrap; }
 
-/* ── MAPA TOP-DOWN (overworld Pokémon) ── */
-.world-container { padding: 0.3rem 0.8rem 1.2rem; }
+/* ── MAPA TOP-DOWN — canvas pixel art ── */
+.world-container { padding: 0.3rem 0.5rem 1rem; display: flex; flex-direction: column; align-items: center; }
 
 .map-banner {
-  text-align: center;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--gb-green-d);
   text-shadow: 2px 2px 0 var(--gb-green-l);
-  margin: 0.3rem 0 0.6rem;
+  margin: 0.3rem 0 0.5rem;
+  text-align: center;
 }
 
-.map-viewport {
-  display: grid;
-  grid-template-columns: repeat(var(--cols, 18), 1fr);
-  max-width: 580px;
-  margin: 0 auto;
-  border: 3px solid var(--gb-dark);
+/* Canvas envuelto en caja con borde Pokémon */
+.map-canvas-wrap {
+  border: 4px solid var(--gb-dark);
   border-radius: 4px;
-  box-shadow: inset 0 0 0 2px var(--gb-cream), 4px 4px 0 var(--gb-green-d);
+  box-shadow: inset 0 0 0 2px var(--gb-cream), 5px 5px 0 var(--gb-green-d);
+  line-height: 0;
   overflow: hidden;
 }
 
-/* Paletas de suelo por bioma */
-.biome-garden { --ground: #b8e088; --grassbg: #88c858; --wallbg: #50a030; --waterbg: #58a8f8; }
-.biome-forest { --ground: #a0d070; --grassbg: #68a848; --wallbg: #2e6020; --waterbg: #58a8f8; }
-.biome-cave   { --ground: #c8c0a8; --grassbg: #a8a088; --wallbg: #585048; --waterbg: #5878a8; }
-.biome-swamp  { --ground: #a8c080; --grassbg: #789858; --wallbg: #406030; --waterbg: #4888b8; }
-
-.tile {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(9px, 2.6vw, 19px);
-  line-height: 1;
-  position: relative;
-  overflow: visible;
+#map-canvas {
+  display: block;
+  /* Lógico: 288×288px; se escala para que ocupe hasta 90vw o 420px */
+  width: min(90vw, 420px);
+  height: min(90vw, 420px);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
-.t-ground { background: var(--ground); }
-.t-grass  { background: var(--grassbg); }
-.t-wall   { background: var(--wallbg); }
-.t-water  { background: var(--waterbg); }
-.t-item   { background: var(--ground); animation: itemBlink 1s steps(2, jump-none) infinite; }
-.t-heal   { background: var(--ground); }
-.t-boss   { background: var(--ground); animation: bossBlink 0.8s steps(2, jump-none) infinite; }
-.t-door   {
-  background: var(--gb-dark);
-  color: var(--gb-cream);
-  font-size: clamp(7px, 2vw, 14px);
-}
-@keyframes itemBlink { 0%,100% { filter: none; } 50% { filter: brightness(1.4); } }
-@keyframes bossBlink { 0%,100% { filter: none; } 50% { filter: brightness(1.3) saturate(2); } }
-
-.map-player {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15em;
-  z-index: 2;
-  filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.45));
-  animation: playerBob 0.8s steps(2, jump-none) infinite;
-}
-@keyframes playerBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
 
 .map-message {
-  max-width: 580px;
-  margin: 0.6rem auto 0;
-  padding: 0.55rem 0.8rem;
-  font-size: 0.55rem;
-  line-height: 1.8;
+  width: min(90vw, 420px);
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.52rem;
+  line-height: 1.9;
   text-align: center;
-  min-height: 2.4em;
+  min-height: 2.2em;
   background: var(--menu-white);
   border: 3px solid var(--gb-dark);
-  border-radius: 6px;
+  border-radius: 4px;
   box-shadow: inset 0 0 0 2px var(--menu-white), inset 0 0 0 4px var(--shadow-px);
 }
 .map-message.hidden { visibility: hidden; }
@@ -384,33 +347,34 @@ button {
   display: grid;
   grid-template-areas:
     '.    up    .'
-    'left mid right'
+    'left .     right'
     '.    down  .';
-  gap: 3px;
+  gap: 4px;
 }
 .dpad-btn {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   background: var(--gb-dark);
   color: var(--gb-cream);
   border: 2px solid #000;
-  border-radius: 6px;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
   cursor: pointer;
-  box-shadow: 0 3px 0 #000;
+  box-shadow: 0 4px 0 #000;
+  touch-action: none;
 }
-.dpad-btn:active { transform: translateY(3px); box-shadow: none; }
+.dpad-btn:active { transform: translateY(4px); box-shadow: none; }
 .dpad-btn.up    { grid-area: up; }
 .dpad-btn.down  { grid-area: down; }
 .dpad-btn.left  { grid-area: left; }
 .dpad-btn.right { grid-area: right; }
 
 .map-hint {
-  font-size: 0.5rem;
+  font-size: 0.48rem;
   color: var(--gb-green);
   line-height: 2;
   text-align: center;
-  max-width: 240px;
+  max-width: 200px;
 }
 
 /* ── COMBAT SCREEN (layout Pokémon) ─── */

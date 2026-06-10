@@ -35,7 +35,7 @@
       </h1>
       <p class="title-sub">Comienza pequeño. Evoluciona. Domina.</p>
       <button class="btn-primary glow-pulse" onclick="showScreen('screen-select')">▶ COMENZAR</button>
-      <p class="version-tag">v4 · mundo explorable + sonido 8-bit</p>
+      <p class="version-tag">v5 · canvas pixel-art + sonido 8-bit</p>
     </div>
   </div>
 </div>
@@ -95,7 +95,9 @@
 
   <div class="world-container">
     <div id="map-banner" class="map-banner"></div>
-    <div id="map-viewport" class="map-viewport"></div>
+    <div class="map-canvas-wrap">
+      <canvas id="map-canvas"></canvas>
+    </div>
     <div id="map-message" class="map-message hidden"></div>
     <div class="map-controls">
       <div class="dpad">
