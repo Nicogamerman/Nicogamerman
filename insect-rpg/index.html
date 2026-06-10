@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metamorfosis — RPG de Insectos</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ═══════════════ PANTALLA TÍTULO ═══════════════ -->
+<div id="screen-title" class="screen active">
+  <div class="title-bg">
+    <div class="floating-bugs">
+      <span class="bug b1">🦋</span>
+      <span class="bug b2">🐛</span>
+      <span class="bug b3">🕷️</span>
+      <span class="bug b4">🐜</span>
+      <span class="bug b5">🪲</span>
+      <span class="bug b6">🦗</span>
+    </div>
+    <div class="title-content">
+      <h1 class="game-title">
+        <span class="title-line1">METAMORFOSIS</span>
+        <span class="title-line2">RPG de Insectos</span>
+      </h1>
+      <p class="title-sub">Comienza pequeño. Evoluciona. Domina.</p>
+      <button class="btn-primary glow-pulse" onclick="showScreen('screen-select')">▶ COMENZAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SELECCIÓN DE PERSONAJE ═══════════════ -->
+<div id="screen-select" class="screen">
+  <h2 class="section-title">Elige tu Insecto</h2>
+  <p class="section-sub">Cada criatura tiene dones únicos y sombras que la definen.</p>
+  <div id="char-cards" class="char-grid"></div>
+  <div id="char-detail" class="char-detail hidden">
+    <div class="detail-left">
+      <div id="detail-sprite" class="detail-sprite"></div>
+      <div id="detail-evos" class="evo-chain"></div>
+    </div>
+    <div class="detail-right">
+      <h3 id="detail-name"></h3>
+      <p id="detail-lore"></p>
+      <div id="detail-bars" class="stat-bars"></div>
+      <div class="trait-row">
+        <div id="detail-pros" class="trait-box pros"></div>
+        <div id="detail-cons" class="trait-box cons"></div>
+      </div>
+      <button class="btn-primary" id="btn-select-char">Elegir este Insecto →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MAPA DEL MUNDO ═══════════════ -->
+<div id="screen-world" class="screen">
+  <div class="hud">
+    <div class="hud-left">
+      <span id="hud-sprite" class="hud-sprite"></span>
+      <div class="hud-info">
+        <span id="hud-name" class="hud-name"></span>
+        <span id="hud-evo" class="hud-evo"></span>
+      </div>
+    </div>
+    <div class="hud-stats">
+      <div class="bar-wrap">
+        <label>HP</label>
+        <div class="bar-outer"><div id="bar-hp" class="bar-inner hp"></div></div>
+        <span id="txt-hp"></span>
+      </div>
+      <div class="bar-wrap">
+        <label>XP</label>
+        <div class="bar-outer"><div id="bar-xp" class="bar-inner xp"></div></div>
+        <span id="txt-xp"></span>
+      </div>
+    </div>
+    <div class="hud-right">
+      <span>Nv. <strong id="hud-level">1</strong></span>
+      <button class="btn-sm" onclick="showInventory()">🎒 Items</button>
+      <button class="btn-sm" onclick="showStatus()">📊 Stats</button>
+    </div>
+  </div>
+
+  <div class="world-container">
+    <h2 class="section-title">Elige una Zona</h2>
+    <div id="biome-grid" class="biome-grid"></div>
+  </div>
+
+  <!-- Modales -->
+  <div id="modal-inventory" class="modal hidden">
+    <div class="modal-box">
+      <h3>🎒 Mochila</h3>
+      <div id="inventory-list" class="inventory-list"></div>
+      <button class="btn-sm" onclick="closeModal('modal-inventory')">Cerrar</button>
+    </div>
+  </div>
+  <div id="modal-status" class="modal hidden">
+    <div class="modal-box">
+      <h3>📊 Estado del Insecto</h3>
+      <div id="status-content"></div>
+      <button class="btn-sm" onclick="closeModal('modal-status')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ COMBATE ═══════════════ -->
+<div id="screen-combat" class="screen">
+  <div class="combat-arena">
+    <div class="combatant enemy-side">
+      <div id="enemy-sprite" class="combatant-sprite enemy-anim"></div>
+      <div class="combatant-info">
+        <div id="enemy-name" class="combatant-name"></div>
+        <div class="bar-wrap">
+          <div class="bar-outer"><div id="bar-enemy-hp" class="bar-inner hp"></div></div>
+          <span id="txt-enemy-hp"></span>
+        </div>
+        <div id="enemy-status" class="status-effects"></div>
+      </div>
+    </div>
+
+    <div id="combat-log" class="combat-log">
+      <div id="log-entries"></div>
+    </div>
+
+    <div class="combatant player-side">
+      <div class="combatant-info">
+        <div id="player-combat-name" class="combatant-name"></div>
+        <div class="bar-wrap">
+          <div class="bar-outer"><div id="bar-player-hp" class="bar-inner hp"></div></div>
+          <span id="txt-player-combat-hp"></span>
+        </div>
+        <div id="player-status" class="status-effects"></div>
+      </div>
+      <div id="player-sprite" class="combatant-sprite player-anim"></div>
+    </div>
+  </div>
+
+  <div id="action-panel" class="action-panel">
+    <div class="action-row">
+      <button class="btn-action atk" onclick="playerAction('attack')">⚔️ Atacar</button>
+      <button class="btn-action" id="btn-skill1" onclick="playerAction('skill1')"></button>
+      <button class="btn-action" id="btn-skill2" onclick="playerAction('skill2')"></button>
+      <button class="btn-action item-btn" onclick="playerAction('item')">🎒 Usar Item</button>
+      <button class="btn-action flee-btn" onclick="playerAction('flee')">💨 Huir</button>
+    </div>
+    <div id="skill-tooltip" class="skill-tooltip hidden"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ EVOLUCIÓN ═══════════════ -->
+<div id="screen-evolution" class="screen">
+  <div class="evo-scene">
+    <div id="evo-before" class="evo-form"></div>
+    <div class="evo-arrow">⟹</div>
+    <div id="evo-after" class="evo-form glow-evo"></div>
+    <h2 id="evo-title" class="evo-title"></h2>
+    <p id="evo-desc" class="evo-desc"></p>
+    <div id="evo-stat-changes" class="evo-stats"></div>
+    <button class="btn-primary glow-pulse" onclick="finishEvolution()">¡Continuar!</button>
+  </div>
+</div>
+
+<!-- ═══════════════ GAME OVER / VICTORIA ═══════════════ -->
+<div id="screen-end" class="screen">
+  <div class="end-scene">
+    <div id="end-icon" class="end-icon"></div>
+    <h2 id="end-title"></h2>
+    <p id="end-msg"></p>
+    <button class="btn-primary" onclick="resetGame()">🔄 Jugar de Nuevo</button>
+  </div>
+</div>
+
+<script src="characters.js"></script>
+<script src="world.js"></script>
+<script src="combat.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
