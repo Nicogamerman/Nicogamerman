@@ -8,23 +8,66 @@ window.player = null;
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  if (id === 'screen-select') _startSelectLoop();
+  else if (id !== 'screen-select') _stopSelectLoop();
 }
 
 // ─── CHARACTER SELECT ────────────────────────
+let _selectTick = 0;
+let _selectRaf = null;
+const _cardCanvases = [];
+
+function _startSelectLoop() {
+  if (_selectRaf) return;
+  const loop = () => {
+    _selectTick++;
+    _cardCanvases.forEach(({ canvas, charId }) => {
+      if (!canvas.isConnected) return;
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (typeof drawSprite === 'function') {
+        drawSprite(ctx, charId, canvas.width / 2, canvas.height / 2, 3, _selectTick);
+      }
+    });
+    _selectRaf = requestAnimationFrame(loop);
+  };
+  _selectRaf = requestAnimationFrame(loop);
+}
+
+function _stopSelectLoop() {
+  if (_selectRaf) cancelAnimationFrame(_selectRaf);
+  _selectRaf = null;
+}
+
 function initCharSelect() {
   const grid = document.getElementById('char-cards');
   grid.innerHTML = '';
+  _cardCanvases.length = 0;
   CHARACTERS.forEach(char => {
     const card = document.createElement('div');
     card.className = 'char-card';
-    card.innerHTML = `
-      <div class="card-emoji">${char.emoji}</div>
-      <div class="card-name">${char.name}</div>
-      <div class="card-hint">Click para ver detalles</div>
-    `;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 48; canvas.height = 48;
+    canvas.className = 'card-sprite';
+    _cardCanvases.push({ canvas, charId: char.id });
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'card-name';
+    nameEl.textContent = char.name;
+
+    const hintEl = document.createElement('div');
+    hintEl.className = 'card-hint';
+    hintEl.textContent = 'Click para ver detalles';
+
+    card.appendChild(canvas);
+    card.appendChild(nameEl);
+    card.appendChild(hintEl);
     card.onclick = () => showCharDetail(char, card);
     grid.appendChild(card);
   });
+  _startSelectLoop();
 }
 
 function showCharDetail(char, cardEl) {
@@ -34,7 +77,17 @@ function showCharDetail(char, cardEl) {
   const detail = document.getElementById('char-detail');
   detail.classList.remove('hidden');
 
-  document.getElementById('detail-sprite').innerHTML = char.emoji;
+  const spriteDiv = document.getElementById('detail-sprite');
+  const dCanvas = document.createElement('canvas');
+  dCanvas.width = 96; dCanvas.height = 96;
+  dCanvas.style.imageRendering = 'pixelated';
+  spriteDiv.innerHTML = '';
+  spriteDiv.appendChild(dCanvas);
+  if (typeof drawSprite === 'function') {
+    const ctx = dCanvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    drawSprite(ctx, char.id, 48, 48, 6, 0);
+  }
   document.getElementById('detail-name').textContent = char.name;
   document.getElementById('detail-lore').textContent = char.lore;
 
@@ -73,6 +126,7 @@ function showCharDetail(char, cardEl) {
 
 // ─── GAME START ───────────────────────────────
 function startGame(char) {
+  _stopSelectLoop();
   const base = JSON.parse(JSON.stringify(char.baseStats));
   window.player = {
     char,
@@ -475,39 +529,6 @@ function onEnemyDefeated(e) {
   }
 }
 
-function renderMap() {
-  if (!worldState || !window.player) return;
-  const vp = document.getElementById('map-viewport');
-  if (!vp) return;
-
-  const m = currentMap();
-  const biome = BIOMES[worldState.biomeIndex];
-  const emo = TILE_EMOJI[biome.id];
-  vp.className = 'map-viewport biome-' + biome.id;
-  vp.style.setProperty('--cols', m[0].length);
-  document.getElementById('map-banner').textContent = `${biome.emoji} ${biome.name}`;
-
-  let html = '';
-  for (let y = 0; y < m.length; y++) {
-    for (let x = 0; x < m[y].length; x++) {
-      const t = m[y][x];
-      let cls = 'tile', content = '';
-      if (t === '#')      { cls += ' t-wall';  content = emo['#']; }
-      else if (t === '~') { cls += ' t-water'; content = emo['~'] || ''; }
-      else if (t === ',') { cls += ' t-grass'; content = emo[',']; }
-      else if (t === 'I') { cls += ' t-item';  content = emo['I']; }
-      else if (t === 'H') { cls += ' t-heal';  content = emo['H']; }
-      else if (t === 'B') { cls += ' t-boss';  content = (biome.enemies.find(e => e.isBoss) || {}).emoji || '❓'; }
-      else if (t === '>') { cls += ' t-door';  content = '▶'; }
-      else if (t === '<') { cls += ' t-door';  content = '◀'; }
-      else                { cls += ' t-ground'; }
-
-      const isPlayer = (x === worldState.x && y === worldState.y);
-      html += `<div class="${cls}">${content}${isPlayer ? `<span class="map-player">${window.player.currentEmoji}</span>` : ''}</div>`;
-    }
-  }
-  vp.innerHTML = html;
-}
 
 let _msgTimer = null;
 function mapMessage(text) {
@@ -746,6 +767,7 @@ function resetGame() {
   window.player = null;
   window._lastEnemy = null;
   _stopMapLoop();
+  _stopSelectLoop();
   stopMusic();
   showScreen('screen-title');
 }

@@ -3,6 +3,66 @@
 // ═══════════════════════════════════════════════
 
 let combatState = null;
+let _combatRaf = null;
+let _combatTick = 0;
+
+function _startCombatLoop(biomeId) {
+  // Inject canvases into sprite holders
+  const eDiv = document.getElementById('enemy-sprite');
+  const pDiv = document.getElementById('player-sprite');
+  const S = 4;  // scale: 4px per logical pixel → 64×64
+  const sz = 16 * S;
+  if (eDiv) { eDiv.innerHTML = `<canvas width="${sz}" height="${sz}" style="image-rendering:pixelated;display:block;"></canvas>`; }
+  if (pDiv) { pDiv.innerHTML = `<canvas width="${sz}" height="${sz}" style="image-rendering:pixelated;display:block;"></canvas>`; }
+
+  // Draw battle background once (static)
+  const bgCanvas = document.getElementById('battle-bg');
+  if (bgCanvas) {
+    const bw = bgCanvas.parentElement ? bgCanvas.parentElement.offsetWidth : 320;
+    bgCanvas.width = bw;
+    bgCanvas.height = 100;
+    if (typeof drawBattleBackground === 'function') {
+      const bgCtx = bgCanvas.getContext('2d');
+      bgCtx.imageSmoothingEnabled = false;
+      drawBattleBackground(bgCtx, bw, 100, biomeId || 'garden');
+    }
+  }
+
+  if (_combatRaf) return;
+  const loop = () => {
+    _combatTick++;
+    const enemy = combatState ? combatState.enemy : null;
+    const p = window.player;
+    if (typeof drawSprite !== 'function') { _combatRaf = requestAnimationFrame(loop); return; }
+
+    if (enemy) {
+      const eCanvas = eDiv ? eDiv.querySelector('canvas') : null;
+      if (eCanvas) {
+        const ctx = eCanvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, sz, sz);
+        const spriteId = (typeof ENEMY_SPRITE_MAP !== 'undefined' && ENEMY_SPRITE_MAP[enemy.name]) || 'caterpillar';
+        drawSprite(ctx, spriteId, sz / 2, sz / 2, S, _combatTick);
+      }
+    }
+    if (p) {
+      const pCanvas = pDiv ? pDiv.querySelector('canvas') : null;
+      if (pCanvas) {
+        const ctx = pCanvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, sz, sz);
+        drawSprite(ctx, p.char.id, sz / 2, sz / 2, S, _combatTick, true);
+      }
+    }
+    _combatRaf = requestAnimationFrame(loop);
+  };
+  _combatRaf = requestAnimationFrame(loop);
+}
+
+function _stopCombatLoop() {
+  if (_combatRaf) cancelAnimationFrame(_combatRaf);
+  _combatRaf = null;
+}
 
 function startCombat(enemy, biome) {
   const e = JSON.parse(JSON.stringify(enemy));
@@ -29,6 +89,8 @@ function startCombat(enemy, biome) {
   sfxEncounter();
   playMusic('battle');
   showScreen('screen-combat');
+  const biomeId = biome ? biome.id : 'garden';
+  _startCombatLoop(biomeId);
   renderCombat();
   logClear();
   addLog(`💥 ¡Un ${e.name} apareció!`, 'system');
@@ -39,13 +101,11 @@ function renderCombat() {
   const { enemy } = combatState;
   const p = window.player;
 
-  // Enemy side
-  document.getElementById('enemy-sprite').innerHTML = enemy.emoji;
+  // Enemy side (sprite drawn by RAF loop)
   document.getElementById('enemy-name').textContent = `${enemy.name} ${enemy.isBoss ? '⭐' : ''}`;
   updateBar('bar-enemy-hp', 'txt-enemy-hp', enemy.currentHp, enemy.hp);
 
-  // Player side
-  document.getElementById('player-sprite').innerHTML = p.currentEmoji;
+  // Player side (sprite drawn by RAF loop)
   document.getElementById('player-combat-name').textContent = p.currentName;
   updateBar('bar-player-hp', 'txt-player-combat-hp', p.stats.hp, p.stats.maxHp);
 
@@ -438,6 +498,7 @@ async function applyEnemySkill(skill, enemy, p, playerDef) {
 async function endCombat(victory, fled = false) {
   const e = window._lastEnemy;
   combatState = null;
+  _stopCombatLoop();
   const p = window.player;
 
   if (fled) {
